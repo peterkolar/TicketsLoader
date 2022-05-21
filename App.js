@@ -16,23 +16,29 @@ const STROKE_WIDTH = 20;
 
 const TIME_EXPAND_STROKE = 500;
 const TIME_ROTATION = 2500;
+const DELAY_ROTATION = 0;
+const TIME_SHRINK_STROKE = 500;
+const STROKE_LENGTH = 0.1;// 0 - 1
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function App() {
   const strokeLength = useSharedValue(0);
   const strokeRotation = useSharedValue(0);
+  const strokeRotateShrinkCorrection = useSharedValue(0);
 
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: CIRCLE_LENGTH - 0.001 - CIRCLE_LENGTH * strokeLength.value,
     transform: [{translateX: width / 2}, {translateY: height / 2},
-      {rotate: strokeRotation.value},
+      {rotate: (strokeRotation.value + strokeRotateShrinkCorrection.value) },
       {translateX: -width / 2}, {translateY: -height / 2}]
   }));
 
   useEffect(() => {
-    strokeLength.value = withTiming(0.1, { duration: TIME_EXPAND_STROKE });
-    strokeRotation.value = withDelay(0, withTiming(3 * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
+    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming((3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
+    strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
   }, []);
   
   return (
