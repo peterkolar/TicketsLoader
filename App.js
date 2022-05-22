@@ -21,7 +21,7 @@ const REC_HEIGHT = 93;
 const TIME_EXPAND_STROKE = 500;
 const TIME_ROTATION = 2500;
 const DELAY_ROTATION = 0;
-const TIME_SHRINK_STROKE = 300;
+const TIME_SHRINK_STROKE = 500;
 const STROKE_LENGTH = 0.1;// 0 - 1
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -35,12 +35,13 @@ export default function App() {
   const rectangleIsAdded = useSharedValue(false);
   const circleIsRemoved = useSharedValue(false);
   const strokeWidth = useSharedValue(STROKE_WIDTH);
+  const strokeTranslate = useSharedValue(0);
 
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: CIRCLE_LENGTH - 0.001 - CIRCLE_LENGTH * strokeLength.value,
     transform: [{translateX: width / 2}, {translateY: height / 2},
       {rotate: (strokeRotation.value + strokeRotateShrinkCorrection.value) },
-      {translateX: -width / 2}, {translateY: -height / 2}],
+      {translateX: -width / 2 + strokeTranslate.value}, {translateY: -height / 2 + strokeTranslate.value}],
     opacity: circleIsRemoved.value ? 0 : 1,
     strokeWidth: strokeWidth.value
   }));
@@ -77,6 +78,7 @@ export default function App() {
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
     strokeWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0, { duration: TIME_SHRINK_STROKE }));
+    strokeTranslate.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_WIDTH, { duration: TIME_SHRINK_STROKE }));
 
     recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withSpring(REC_WIDTH, { damping: 15, mass: 1, stiffness: 100 }));
     recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withSpring(REC_HEIGHT, { damping: 15, mass: 1, stiffness: 100 }));
