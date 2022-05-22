@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import { React, useEffect } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import { React, useCallback } from 'react';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -9,6 +9,7 @@ const COLOR_PRIMARY1 = '#ff5569';// tomato
 const COLOR_PRIMARY2 = '#41d5e4';// turquoise
 const COLOR_PRIMARY3 = '#4f52e2';// royalblue
 const COLOR_PRIMARY4 = '#ff8d37';// coral
+const COLOR_BUTTON_PRIMARY = 'gray';
 
 const R = 50;
 const CIRCLE_LENGTH = 2 * Math.PI * R;
@@ -59,8 +60,18 @@ export default function App() {
       opacity: rectangleIsAdded.value ? 1 : 0,
     };
   });
+  
+  const onPress = useCallback(() => {
+    
+    strokeLength.value = 0;
+    strokeRotation.value = 0;
+    strokeRotateShrinkCorrection.value = 0;
+    recWidth.value = STROKE_WIDTH;
+    recHeight.value = STROKE_WIDTH;
+    rectangleIsAdded.value = false;
+    circleIsRemoved.value = false;
+    strokeWidth.value = STROKE_WIDTH;
 
-  useEffect(() => {
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
     strokeRotation.value = withDelay(DELAY_ROTATION, withTiming((3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
@@ -75,7 +86,7 @@ export default function App() {
     rectangleIsAdded.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(true, { duration: 0 }));
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <Svg style={{ position: 'absolute' }}>
@@ -90,6 +101,9 @@ export default function App() {
         />
       </Svg>
       <Animated.View style={[styles.square, recStyle]} />
+      <TouchableOpacity onPress={onPress} style={styles.button}>
+        <Text style={styles.buttonText}>Run</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -109,5 +123,20 @@ const styles = StyleSheet.create({
     opacity: 0,
     left: R,
     top: 0,
-  }
+  },
+  button: {
+    position: 'absolute',
+    bottom: 80,
+    width: width * 0.7,
+    height: 60,
+    backgroundColor: COLOR_BUTTON_PRIMARY,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 25,
+    color: 'white',
+    letterSpacing: 2.0,
+  },
 });
