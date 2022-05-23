@@ -101,9 +101,14 @@ export default function App() {
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
   }, []);
 
+  /*
+  <Ticket animatedProps={getAnimatedProps(3)} recStyle={getRecStyles(3)} COLOR_PRIMARY={COLOR_PRIMARY4} />
+  <Ticket animatedProps={getAnimatedProps(2)} recStyle={getRecStyles(2)} COLOR_PRIMARY={COLOR_PRIMARY3} />
+  */
   return (
     <View style={styles.container}>
-      <Ticket animatedProps={getAnimatedProps(1)} recStyle={getRecStyles(1)} />
+      <Ticket animatedProps={getAnimatedProps(0)} recStyle={getRecStyles(0)} COLOR_PRIMARY={COLOR_PRIMARY1} />
+      <Ticket animatedProps={getAnimatedProps(1)} recStyle={getRecStyles(1)} COLOR_PRIMARY={COLOR_PRIMARY2} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>
