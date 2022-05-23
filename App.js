@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
 import { React, useCallback } from 'react';
-import Animated, { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import Svg, { Circle } from 'react-native-svg';
+import { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+
+import Ticket from './Ticket.js';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,8 +24,6 @@ const TIME_ROTATION = 2500;
 const DELAY_ROTATION = 0;
 const TIME_SHRINK_STROKE = 500;
 const STROKE_LENGTH = 0.1;// 0 - 1
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function App() {
   const strokeLength = useSharedValue(0);
@@ -91,18 +90,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Svg style={{ position: 'absolute' }}>
-        <AnimatedCircle
-          cx={width / 2}
-          cy={height / 2}
-          r={R}
-          stroke={COLOR_PRIMARY1}
-          strokeDasharray={CIRCLE_LENGTH}
-          animatedProps={animatedProps}
-          strokeLinecap={'round'}
-        />
-      </Svg>
-      <Animated.View style={[styles.square, recStyle]} />
+      <Ticket animatedProps={animatedProps} recStyle={recStyle} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>
@@ -116,15 +104,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  square: {
-    width: STROKE_WIDTH,
-    height: STROKE_WIDTH,
-    backgroundColor: COLOR_PRIMARY1,
-    borderRadius: STROKE_WIDTH / 2,
-    opacity: 0,
-    left: R,
-    top: 0,
   },
   button: {
     position: 'absolute',
