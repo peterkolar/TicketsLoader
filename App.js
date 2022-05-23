@@ -40,24 +40,26 @@ export default function App() {
   const strokeWidth = useSharedValue(STROKE_WIDTH);
   const strokeTranslate = useSharedValue(0);
 
-  const animatedProps = useAnimatedProps(() => ({
-    strokeDashoffset: CIRCLE_LENGTH - 0.001 - CIRCLE_LENGTH * strokeLength.value,
-    transform: [{translateX: width / 2}, {translateY: height / 2},
-      {rotate: (strokeRotation.value + strokeRotateShrinkCorrection.value) },
-      {translateX: -width / 2 + strokeTranslate.value}, {translateY: -height / 2 + strokeTranslate.value}],
-    opacity: circleIsRemoved.value ? 0 : 1,
-    strokeWidth: strokeWidth.value
-  }));
-  
+  const getAnimatedProps = animationIndex => {
+    return useAnimatedProps(() => ({
+      strokeDashoffset: CIRCLE_LENGTH - 0.001 - CIRCLE_LENGTH * strokeLength.value,
+      transform: [{translateX: width / 2}, {translateY: height / 2},
+        {rotate: (strokeRotation.value + Math.PI / 2 * animationIndex + strokeRotateShrinkCorrection.value) },
+        {translateX: -width / 2 + strokeTranslate.value}, {translateY: -height / 2 + strokeTranslate.value}],
+      opacity: circleIsRemoved.value ? 0 : 1,
+      strokeWidth: strokeWidth.value
+    }));
+  };
+
   const getRecStyle = ANIMATION_ANGLE_RAD => {
     return useAnimatedStyle(() => {
       return {
         transform: [
           {
-            translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2,
+            translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(ANIMATION_ANGLE_RAD)),
           },
           {
-            translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2,
+            translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(ANIMATION_ANGLE_RAD)),
           },
         ],
         width: recWidth.value,
@@ -66,7 +68,7 @@ export default function App() {
       };
     });
   };
-
+  
   function getRecStyles (animationIndex) {
     return getRecStyle(getAnimationAngle(animationIndex));
   }
@@ -101,7 +103,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Ticket animatedProps={animatedProps} recStyle={getRecStyles(0)} />
+      <Ticket animatedProps={getAnimatedProps(1)} recStyle={getRecStyles(1)} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>
