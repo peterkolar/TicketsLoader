@@ -24,14 +24,14 @@ const DELAY_ROTATION = 0;
 const TIME_SHRINK_STROKE = 500;
 const STROKE_LENGTH = 0.1;// 0 - 1
 
-let animationIndex = 0;
-let ANIMATION_ANGLE_RAD = Math.PI / 4 + animationIndex * Math.PI / 2;
-//let ANIMATION_ANGLE_RAD = 0;
-
+function getAnimationAngle(index)
+{
+  return Math.PI / 4 + index * Math.PI / 2;
+}
 
 export default function App() {
   const strokeLength = useSharedValue(0);
-  const strokeRotation = useSharedValue(ANIMATION_ANGLE_RAD);
+  const strokeRotation = useSharedValue(getAnimationAngle(0));
   const strokeRotateShrinkCorrection = useSharedValue(0);
   const recWidth = useSharedValue(STROKE_WIDTH);
   const recHeight = useSharedValue(STROKE_WIDTH);
@@ -48,29 +48,33 @@ export default function App() {
     opacity: circleIsRemoved.value ? 0 : 1,
     strokeWidth: strokeWidth.value
   }));
-
-  const recStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          //translateX: (recWidth.value - STROKE_WIDTH) / 2,
-          translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2,
-        },
-        {
-          //translateY: (recHeight.value - STROKE_WIDTH) / 2,
-          translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2,
-        },
-      ],
-      width: recWidth.value,
-      height: recHeight.value,
-      opacity: rectangleIsAdded.value ? 1 : 0,
-    };
-  });
   
+  const getRecStyle = ANIMATION_ANGLE_RAD => {
+    return useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2,
+          },
+          {
+            translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2,
+          },
+        ],
+        width: recWidth.value,
+        height: recHeight.value,
+        opacity: rectangleIsAdded.value ? 1 : 0,
+      };
+    });
+  };
+
+  function getRecStyles (animationIndex) {
+    return getRecStyle(getAnimationAngle(animationIndex));
+  }
+
   const onPress = useCallback(() => {
     
     strokeLength.value = 0;
-    strokeRotation.value = ANIMATION_ANGLE_RAD;
+    strokeRotation.value = getAnimationAngle(0);
     strokeRotateShrinkCorrection.value = 0;
     recWidth.value = STROKE_WIDTH;
     recHeight.value = STROKE_WIDTH;
@@ -80,7 +84,7 @@ export default function App() {
     strokeTranslate.value = 0;
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
-    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(ANIMATION_ANGLE_RAD + (3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
     strokeWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0, { duration: TIME_SHRINK_STROKE }));
@@ -97,7 +101,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Ticket animatedProps={animatedProps} recStyle={recStyle} />
+      <Ticket animatedProps={animatedProps} recStyle={getRecStyles(0)} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>
