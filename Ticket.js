@@ -6,7 +6,7 @@ import Svg, { Circle } from 'react-native-svg';
 
 const { width, height } = Dimensions.get('window');
 
-const R = 50;
+const R = 25;
 const CIRCLE_LENGTH = 2 * Math.PI * R;
 const STROKE_WIDTH = 20;
 

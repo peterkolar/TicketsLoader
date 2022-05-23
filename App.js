@@ -12,7 +12,7 @@ const COLOR_PRIMARY3 = '#4f52e2';// royalblue
 const COLOR_PRIMARY4 = '#ff8d37';// coral
 const COLOR_BUTTON_PRIMARY = 'gray';
 
-const R = 50;
+const R = 25;
 const CIRCLE_LENGTH = 2 * Math.PI * R;
 const STROKE_WIDTH = 20;
 const REC_WIDTH = 150;
@@ -85,18 +85,14 @@ export default function App() {
     strokeTranslate.value = 0;
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
-    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (2 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
-    strokeWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0, { duration: TIME_SHRINK_STROKE }));
-    strokeTranslate.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_WIDTH, { duration: TIME_SHRINK_STROKE }));
-
-    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withSpring(REC_WIDTH, { damping: 15, mass: 1, stiffness: 100 }));
-    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withSpring(REC_HEIGHT, { damping: 15, mass: 1, stiffness: 100 }));
-    //recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(REC_WIDTH, { duration: 500 }));
-    //recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(REC_HEIGHT, { duration: 500 }));
     
-    rectangleIsAdded.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(true, { duration: 0 }));
+    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_WIDTH, { damping: 15, mass: 1, stiffness: 100 }));
+    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_HEIGHT, { damping: 15, mass: 1, stiffness: 100 }));
+
+    rectangleIsAdded.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
   }, []);
 
