@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import { React, useCallback } from 'react';
+import { React, useCallback, useMemo } from 'react';
 import { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import Ticket from './Ticket.js';
@@ -50,8 +50,8 @@ export default function App() {
       strokeWidth: strokeWidth.value
     }));
   };
-
-  const getRecStyle = ANIMATION_ANGLE_RAD => {
+  
+  const getRecStyle = (ANIMATION_ANGLE_RAD) => {
     return useAnimatedStyle(() => {
       return {
         transform: [
@@ -74,7 +74,6 @@ export default function App() {
   }
 
   const onPress = useCallback(() => {
-    
     strokeLength.value = 0;
     strokeRotation.value = getAnimationAngle(0);
     strokeRotateShrinkCorrection.value = 0;
@@ -101,14 +100,12 @@ export default function App() {
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
   }, []);
 
-  /*
-  <Ticket animatedProps={getAnimatedProps(3)} recStyle={getRecStyles(3)} COLOR_PRIMARY={COLOR_PRIMARY4} />
-  <Ticket animatedProps={getAnimatedProps(2)} recStyle={getRecStyles(2)} COLOR_PRIMARY={COLOR_PRIMARY3} />
-  */
   return (
     <View style={styles.container}>
       <Ticket animatedProps={getAnimatedProps(0)} recStyle={getRecStyles(0)} COLOR_PRIMARY={COLOR_PRIMARY1} />
       <Ticket animatedProps={getAnimatedProps(1)} recStyle={getRecStyles(1)} COLOR_PRIMARY={COLOR_PRIMARY2} />
+      <Ticket animatedProps={getAnimatedProps(2)} recStyle={getRecStyles(2)} COLOR_PRIMARY={COLOR_PRIMARY3} />
+      <Ticket animatedProps={getAnimatedProps(3)} recStyle={getRecStyles(3)} COLOR_PRIMARY={COLOR_PRIMARY4} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>

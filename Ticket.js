@@ -15,7 +15,8 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 export default function Ticket(props) {  
   
   const styleSquareColor = StyleSheet.create({
-    backgroundColor: props.COLOR_PRIMARY
+    backgroundColor: props.COLOR_PRIMARY,
+    position: 'absolute'
   });
 
   return (
@@ -39,12 +40,6 @@ export default function Ticket(props) {
   
   
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   square: {
     width: STROKE_WIDTH,
     height: STROKE_WIDTH,
