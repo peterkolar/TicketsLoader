@@ -47,7 +47,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PRIMARY,
     borderRadius: STROKE_WIDTH / 2,
     opacity: 0,
-    left: R,
-    top: 0,
   },
 });

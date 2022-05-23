@@ -18,16 +18,20 @@ const STROKE_WIDTH = 20;
 const REC_WIDTH = 150;
 const REC_HEIGHT = 93;
 
-
 const TIME_EXPAND_STROKE = 500;
 const TIME_ROTATION = 2500;
 const DELAY_ROTATION = 0;
 const TIME_SHRINK_STROKE = 500;
 const STROKE_LENGTH = 0.1;// 0 - 1
 
+let animationIndex = 0;
+let ANIMATION_ANGLE_RAD = Math.PI / 4 + animationIndex * Math.PI / 2;
+//let ANIMATION_ANGLE_RAD = 0;
+
+
 export default function App() {
   const strokeLength = useSharedValue(0);
-  const strokeRotation = useSharedValue(0);
+  const strokeRotation = useSharedValue(ANIMATION_ANGLE_RAD);
   const strokeRotateShrinkCorrection = useSharedValue(0);
   const recWidth = useSharedValue(STROKE_WIDTH);
   const recHeight = useSharedValue(STROKE_WIDTH);
@@ -49,10 +53,12 @@ export default function App() {
     return {
       transform: [
         {
-          translateX: (recWidth.value - STROKE_WIDTH) / 2,
+          //translateX: (recWidth.value - STROKE_WIDTH) / 2,
+          translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2,
         },
         {
-          translateY: (recHeight.value - STROKE_WIDTH) / 2,
+          //translateY: (recHeight.value - STROKE_WIDTH) / 2,
+          translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2,
         },
       ],
       width: recWidth.value,
@@ -64,16 +70,17 @@ export default function App() {
   const onPress = useCallback(() => {
     
     strokeLength.value = 0;
-    strokeRotation.value = 0;
+    strokeRotation.value = ANIMATION_ANGLE_RAD;
     strokeRotateShrinkCorrection.value = 0;
     recWidth.value = STROKE_WIDTH;
     recHeight.value = STROKE_WIDTH;
     rectangleIsAdded.value = false;
     circleIsRemoved.value = false;
     strokeWidth.value = STROKE_WIDTH;
+    strokeTranslate.value = 0;
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
-    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming((3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(ANIMATION_ANGLE_RAD + (3 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
     strokeWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0, { duration: TIME_SHRINK_STROKE }));
