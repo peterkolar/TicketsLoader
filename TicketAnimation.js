@@ -5,29 +5,16 @@ import { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAni
 import Ticket from './Ticket.js';
 
 const { width, height } = Dimensions.get('window');
-const COLOR_PRIMARY1 = 'tomato';
-const COLOR_PRIMARY2 = 'turquoise';
-const COLOR_PRIMARY3 = 'royalblue';
-const COLOR_PRIMARY4 = 'coral';
-
-const R = 40;
-const CIRCLE_LENGTH = 2 * Math.PI * R;
-const STROKE_WIDTH = 15;
-const REC_WIDTH = 150;
-const REC_HEIGHT = 93;
-
-const TIME_EXPAND_STROKE = 500;
-const TIME_ROTATION = 2500;
-const DELAY_ROTATION = 0;
-const TIME_SHRINK_STROKE = 500;
-const STROKE_LENGTH = 0.1;// 0 - 1
 
 function getAnimationAngle(index)
 {
   return Math.PI / 4 + index * Math.PI / 2;
 }
 
-function TicketAnimation(props, ref) {
+const TicketAnimation = forwardRef((props, ref) => {
+  const { R, STROKE_WIDTH, REC_WIDTH, REC_HEIGHT, TIME_EXPAND_STROKE, TIME_ROTATION, DELAY_ROTATION, TIME_SHRINK_STROKE, STROKE_LENGTH, TICKET_DAMPING, TICKET_MASS, TICKET_STIFFNESS, ROTATION_NUM_OF_CIRCLES, COLOR_PRIMARY1, COLOR_PRIMARY2, COLOR_PRIMARY3, COLOR_PRIMARY4 } = props;
+  const CIRCLE_LENGTH = 2 * Math.PI * R;
+
   const strokeLength = useSharedValue(0);
   const strokeRotation = useSharedValue(getAnimationAngle(0));
   const strokeRotateShrinkCorrection = useSharedValue(0);
@@ -72,12 +59,12 @@ function TicketAnimation(props, ref) {
     initAnimationSharedValues();
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
-    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (2 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
+    strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (ROTATION_NUM_OF_CIRCLES - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
     
-    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_WIDTH, { damping: 12, mass: 1.2, stiffness: 100 }));
-    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_HEIGHT, { damping: 12, mass: 1.2, stiffness: 100 }));
+    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_WIDTH, { damping: TICKET_DAMPING, mass: TICKET_MASS, stiffness: TICKET_STIFFNESS }));
+    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_HEIGHT, { damping: TICKET_DAMPING, mass: TICKET_MASS, stiffness: TICKET_STIFFNESS }));
 
     rectangleIsAdded.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
@@ -107,7 +94,28 @@ function TicketAnimation(props, ref) {
       <Ticket animatedProps={getAnimatedCircleProps(3)} recStyle={getRecStyle(3)} COLOR_PRIMARY={COLOR_PRIMARY4} R={R} STROKE_WIDTH={STROKE_WIDTH} />
     </View>
   );
-}
+});
+
+TicketAnimation.displayName = 'TicketAnimation';
+TicketAnimation.defaultProps = {
+  R: 40,
+  STROKE_WIDTH: 15,
+  REC_WIDTH: 150,
+  REC_HEIGHT: 93,
+  TIME_EXPAND_STROKE: 500,
+  TIME_ROTATION: 2500,
+  DELAY_ROTATION: 0,
+  TIME_SHRINK_STROKE: 500,
+  STROKE_LENGTH: 0.1,// 0 - 1
+  TICKET_DAMPING: 12,
+  TICKET_MASS: 1.2,
+  TICKET_STIFFNESS: 100,
+  ROTATION_NUM_OF_CIRCLES: 2,
+  COLOR_PRIMARY1: 'tomato',
+  COLOR_PRIMARY2: 'turquoise',
+  COLOR_PRIMARY3: 'royalblue',
+  COLOR_PRIMARY4: 'coral',
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -118,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default forwardRef(TicketAnimation);
+export default TicketAnimation;
