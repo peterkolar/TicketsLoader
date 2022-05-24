@@ -10,9 +10,9 @@ const COLOR_PRIMARY2 = 'turquoise';
 const COLOR_PRIMARY3 = 'royalblue';
 const COLOR_PRIMARY4 = 'coral';
 
-const R = 25;
+const R = 40;
 const CIRCLE_LENGTH = 2 * Math.PI * R;
-const STROKE_WIDTH = 12;
+const STROKE_WIDTH = 15;
 const REC_WIDTH = 150;
 const REC_HEIGHT = 93;
 
@@ -66,10 +66,10 @@ export default function TicketAnimation(props) {
       return {
         transform: [
           {
-            translateX: R * Math.cos(animAngle) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(animAngle)),
+            translateX: R * Math.cos(animAngle) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(animAngle)) - (recWidth.value - STROKE_WIDTH) / 8 * Math.sign(Math.cos(animAngle)),
           },
           {
-            translateY: R * Math.sin(animAngle) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(animAngle)),
+            translateY: R * Math.sin(animAngle) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(animAngle)) - (recWidth.value - STROKE_WIDTH) / 8 * Math.sign(Math.sin(animAngle)),
           },
         ],
         width: recWidth.value,
@@ -87,8 +87,8 @@ export default function TicketAnimation(props) {
     strokeLength.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(0.001, { duration: TIME_SHRINK_STROKE }));
     strokeRotateShrinkCorrection.value = withDelay(TIME_ROTATION + DELAY_ROTATION - TIME_SHRINK_STROKE, withTiming(STROKE_LENGTH * 2 * Math.PI, { duration: TIME_SHRINK_STROKE }));
     
-    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_WIDTH, { damping: 15, mass: 1, stiffness: 100 }));
-    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_HEIGHT, { damping: 15, mass: 1, stiffness: 100 }));
+    recWidth.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_WIDTH, { damping: 12, mass: 1.2, stiffness: 100 }));
+    recHeight.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withSpring(REC_HEIGHT, { damping: 12, mass: 1.2, stiffness: 100 }));
 
     rectangleIsAdded.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
