@@ -1,20 +1,20 @@
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import { React, useCallback, useMemo } from 'react';
+import { React, useCallback } from 'react';
 import { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import Ticket from './Ticket.js';
 
 const { width, height } = Dimensions.get('window');
 
-const COLOR_PRIMARY1 = '#ff5569';// tomato
-const COLOR_PRIMARY2 = '#41d5e4';// turquoise
-const COLOR_PRIMARY3 = '#4f52e2';// royalblue
-const COLOR_PRIMARY4 = '#ff8d37';// coral
+const COLOR_PRIMARY1 = 'tomato';
+const COLOR_PRIMARY2 = 'turquoise';
+const COLOR_PRIMARY3 = 'royalblue';
+const COLOR_PRIMARY4 = 'coral';
 const COLOR_BUTTON_PRIMARY = 'gray';
 
 const R = 25;
 const CIRCLE_LENGTH = 2 * Math.PI * R;
-const STROKE_WIDTH = 20;
+const STROKE_WIDTH = 12;
 const REC_WIDTH = 150;
 const REC_HEIGHT = 93;
 
@@ -36,11 +36,11 @@ export default function App() {
   const recWidth = useSharedValue(STROKE_WIDTH);
   const recHeight = useSharedValue(STROKE_WIDTH);
   const rectangleIsAdded = useSharedValue(false);
-  const circleIsRemoved = useSharedValue(false);
+  const circleIsRemoved = useSharedValue(true);
   const strokeWidth = useSharedValue(STROKE_WIDTH);
   const strokeTranslate = useSharedValue(0);
 
-  const getAnimatedProps = animationIndex => {
+  const getAnimatedCircleProps = animationIndex => {
     return useAnimatedProps(() => ({
       strokeDashoffset: CIRCLE_LENGTH - 0.001 - CIRCLE_LENGTH * strokeLength.value,
       transform: [{translateX: width / 2}, {translateY: height / 2},
@@ -51,15 +51,16 @@ export default function App() {
     }));
   };
   
-  const getRecStyle = (ANIMATION_ANGLE_RAD) => {
+  const getRecStyle = (animationIndex) => {
+    const animAngle = getAnimationAngle(animationIndex);
     return useAnimatedStyle(() => {
       return {
         transform: [
           {
-            translateX: R * Math.cos(ANIMATION_ANGLE_RAD) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(ANIMATION_ANGLE_RAD)),
+            translateX: R * Math.cos(animAngle) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(animAngle)),
           },
           {
-            translateY: R * Math.sin(ANIMATION_ANGLE_RAD) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(ANIMATION_ANGLE_RAD)),
+            translateY: R * Math.sin(animAngle) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(animAngle)),
           },
         ],
         width: recWidth.value,
@@ -68,21 +69,9 @@ export default function App() {
       };
     });
   };
-  
-  function getRecStyles (animationIndex) {
-    return getRecStyle(getAnimationAngle(animationIndex));
-  }
 
   const onPress = useCallback(() => {
-    strokeLength.value = 0;
-    strokeRotation.value = getAnimationAngle(0);
-    strokeRotateShrinkCorrection.value = 0;
-    recWidth.value = STROKE_WIDTH;
-    recHeight.value = STROKE_WIDTH;
-    rectangleIsAdded.value = false;
-    circleIsRemoved.value = false;
-    strokeWidth.value = STROKE_WIDTH;
-    strokeTranslate.value = 0;
+    initAnimationSharedValues();
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
     strokeRotation.value = withDelay(DELAY_ROTATION, withTiming(getAnimationAngle(0) + (2 - STROKE_LENGTH) * 2 * Math.PI, { duration: TIME_ROTATION, easing: Easing.inOut(Easing.cubic) }));
@@ -96,12 +85,24 @@ export default function App() {
     circleIsRemoved.value = withDelay(TIME_ROTATION + DELAY_ROTATION, withTiming(true, { duration: 0 }));
   }, []);
 
+  function initAnimationSharedValues(){
+    strokeLength.value = 0;
+    strokeRotation.value = getAnimationAngle(0);
+    strokeRotateShrinkCorrection.value = 0;
+    recWidth.value = STROKE_WIDTH;
+    recHeight.value = STROKE_WIDTH;
+    rectangleIsAdded.value = false;
+    circleIsRemoved.value = false;
+    strokeWidth.value = STROKE_WIDTH;
+    strokeTranslate.value = 0;
+  }
+  
   return (
     <View style={styles.container}>
-      <Ticket animatedProps={getAnimatedProps(0)} recStyle={getRecStyles(0)} COLOR_PRIMARY={COLOR_PRIMARY1} />
-      <Ticket animatedProps={getAnimatedProps(1)} recStyle={getRecStyles(1)} COLOR_PRIMARY={COLOR_PRIMARY2} />
-      <Ticket animatedProps={getAnimatedProps(2)} recStyle={getRecStyles(2)} COLOR_PRIMARY={COLOR_PRIMARY3} />
-      <Ticket animatedProps={getAnimatedProps(3)} recStyle={getRecStyles(3)} COLOR_PRIMARY={COLOR_PRIMARY4} />
+      <Ticket animatedProps={getAnimatedCircleProps(0)} recStyle={getRecStyle(0)} COLOR_PRIMARY={COLOR_PRIMARY1} R={R} STROKE_WIDTH={STROKE_WIDTH} />
+      <Ticket animatedProps={getAnimatedCircleProps(1)} recStyle={getRecStyle(1)} COLOR_PRIMARY={COLOR_PRIMARY2} R={R} STROKE_WIDTH={STROKE_WIDTH} />
+      <Ticket animatedProps={getAnimatedCircleProps(2)} recStyle={getRecStyle(2)} COLOR_PRIMARY={COLOR_PRIMARY3} R={R} STROKE_WIDTH={STROKE_WIDTH} />
+      <Ticket animatedProps={getAnimatedCircleProps(3)} recStyle={getRecStyle(3)} COLOR_PRIMARY={COLOR_PRIMARY4} R={R} STROKE_WIDTH={STROKE_WIDTH} />
       <TouchableOpacity onPress={onPress} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>

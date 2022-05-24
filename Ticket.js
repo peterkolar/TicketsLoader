@@ -6,17 +6,20 @@ import Svg, { Circle } from 'react-native-svg';
 
 const { width, height } = Dimensions.get('window');
 
-const R = 25;
-const CIRCLE_LENGTH = 2 * Math.PI * R;
-const STROKE_WIDTH = 20;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function Ticket(props) {  
+  const { R, STROKE_WIDTH } = props;
+  const CIRCLE_LENGTH = 2 * Math.PI * R;
   
-  const styleSquareColor = StyleSheet.create({
+  const recStyle = StyleSheet.create({
     backgroundColor: props.COLOR_PRIMARY,
-    position: 'absolute'
+    position: 'absolute',
+    width: STROKE_WIDTH,
+    height: STROKE_WIDTH,
+    borderRadius: STROKE_WIDTH / 2,
+    opacity: 0,
   });
 
   return (
@@ -32,18 +35,7 @@ export default function Ticket(props) {
           strokeLinecap={'round'}
         />
       </Svg>
-      <Animated.View style={[styles.square, props.recStyle, styleSquareColor]} />
+      <Animated.View style={[recStyle, props.recStyle]} />
     </>
   );
 }
-
-  
-  
-const styles = StyleSheet.create({
-  square: {
-    width: STROKE_WIDTH,
-    height: STROKE_WIDTH,
-    borderRadius: STROKE_WIDTH / 2,
-    opacity: 0,
-  },
-});
