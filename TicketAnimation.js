@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useSharedValue, useAnimatedProps, withTiming, withDelay, Easing, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
@@ -27,18 +27,7 @@ function getAnimationAngle(index)
   return Math.PI / 4 + index * Math.PI / 2;
 }
 
-export default function TicketAnimation(props) {
-
-  const generate = () => onReload();
-  
-  useEffect(() => {
-    props.generateRef.current = generate;
-
-    return () => {
-      props.generateRef.current = null;
-    };
-  }, []);
-
+function TicketAnimation(props, ref) {
   const strokeLength = useSharedValue(0);
   const strokeRotation = useSharedValue(getAnimationAngle(0));
   const strokeRotateShrinkCorrection = useSharedValue(0);
@@ -66,10 +55,10 @@ export default function TicketAnimation(props) {
       return {
         transform: [
           {
-            translateX: R * Math.cos(animAngle) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(animAngle)) - (recWidth.value - STROKE_WIDTH) / 8 * Math.sign(Math.cos(animAngle)),
+            translateX: R * Math.cos(animAngle) + (recWidth.value - STROKE_WIDTH) / 2 * Math.sign(Math.cos(animAngle)) - (recWidth.value - STROKE_WIDTH) / 12 * Math.sign(Math.cos(animAngle)),
           },
           {
-            translateY: R * Math.sin(animAngle) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(animAngle)) - (recWidth.value - STROKE_WIDTH) / 8 * Math.sign(Math.sin(animAngle)),
+            translateY: R * Math.sin(animAngle) + (recHeight.value - STROKE_WIDTH) / 2 * Math.sign(Math.sin(animAngle)) - (recWidth.value - STROKE_WIDTH) / 12 * Math.sign(Math.sin(animAngle)),
           },
         ],
         width: recWidth.value,
@@ -79,7 +68,7 @@ export default function TicketAnimation(props) {
     });
   };
 
-  const onReload = useCallback(() => {
+  const reload = useCallback(() => {
     initAnimationSharedValues();
 
     strokeLength.value = withTiming(STROKE_LENGTH, { duration: TIME_EXPAND_STROKE });
@@ -106,6 +95,10 @@ export default function TicketAnimation(props) {
     strokeTranslate.value = 0;
   }
 
+  useImperativeHandle(ref, () => ({
+    start: reload
+  }));
+
   return (
     <View style={styles.container}>
       <Ticket animatedProps={getAnimatedCircleProps(0)} recStyle={getRecStyle(0)} COLOR_PRIMARY={COLOR_PRIMARY1} R={R} STROKE_WIDTH={STROKE_WIDTH} />
@@ -124,3 +117,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default forwardRef(TicketAnimation);

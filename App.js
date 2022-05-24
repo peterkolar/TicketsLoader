@@ -7,13 +7,12 @@ const { width } = Dimensions.get('window');
 const COLOR_BUTTON_PRIMARY = 'gray';
 
 export default function App() {
-  let generateRef = useRef();
-  const generate = () => generateRef.current();
+  const animationRef = useRef();
 
   return (
     <View style={styles.container}>
-      <TicketAnimation generateRef={generateRef}/>
-      <TouchableOpacity onPress={generate} style={styles.button}>
+      <TicketAnimation ref={animationRef}/>
+      <TouchableOpacity onPress={() => { animationRef.current && animationRef.current.start(); }} style={styles.button}>
         <Text style={styles.buttonText}>Run</Text>
       </TouchableOpacity>
     </View>
