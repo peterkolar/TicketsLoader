@@ -1,11 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+
+import TicketAnimation from './TicketAnimation.js';
+
+const { width } = Dimensions.get('window');
+const COLOR_BUTTON_PRIMARY = 'gray';
 
 export default function App() {
+  const animationRef = useRef();
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <TicketAnimation ref={animationRef}/>
+      <TouchableOpacity onPress={() => { animationRef.current && animationRef.current.start(); }} style={styles.button}>
+        <Text style={styles.buttonText}>Run</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -16,5 +25,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  button: {
+    position: 'absolute',
+    bottom: 80,
+    width: width * 0.7,
+    height: 60,
+    backgroundColor: COLOR_BUTTON_PRIMARY,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 25,
+    color: 'white',
+    letterSpacing: 2.0,
   },
 });
